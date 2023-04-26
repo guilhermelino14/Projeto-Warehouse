@@ -29,34 +29,58 @@ class WarehouseState(State[Action]):
 
     def can_move_up(self) -> bool:
         # TODO
-        pass
+        if self.matrix[self.line_forklift - 1][self.column_forklift] == constants.EMPTY:
+            return True
+        return False
 
     def can_move_right(self) -> bool:
         # TODO
-        pass
+        if self.matrix[self.line_forklift][self.column_forklift + 1] == constants.EMPTY:
+            return True
+        return False
 
     def can_move_down(self) -> bool:
         # TODO
-        pass
+        if self.matrix[self.line_forklift + 1][self.column_forklift] == constants.EMPTY:
+            return True
+        return False
 
     def can_move_left(self) -> bool:
         # TODO
-        pass
+        if self.matrix[self.line_forklift][self.column_forklift - 1] == constants.EMPTY:
+            return True
+        return False
 
     def move_up(self) -> None:
         # TODO
+        if self.can_move_up():
+            self.matrix[self.line_forklift][self.column_forklift] = constants.EMPTY
+            self.matrix[self.line_forklift - 1][self.column_forklift] = constants.FORKLIFT
+            self.line_forklift -= 1
         pass
 
     def move_right(self) -> None:
         # TODO
+        if self.can_move_right():
+            self.matrix[self.line_forklift][self.column_forklift] = constants.EMPTY
+            self.matrix[self.line_forklift][self.column_forklift + 1] = constants.FORKLIFT
+            self.column_forklift += 1
         pass
 
     def move_down(self) -> None:
         # TODO
+        if self.can_move_down():
+            self.matrix[self.line_forklift][self.column_forklift] = constants.EMPTY
+            self.matrix[self.line_forklift + 1][self.column_forklift] = constants.FORKLIFT
+            self.line_forklift += 1
         pass
 
     def move_left(self) -> None:
         # TODO
+        if self.can_move_left():
+            self.matrix[self.line_forklift][self.column_forklift] = constants.EMPTY
+            self.matrix[self.line_forklift][self.column_forklift - 1] = constants.FORKLIFT
+            self.column_forklift -= 1
         pass
 
     def get_cell_color(self, row: int, column: int) -> Color:
