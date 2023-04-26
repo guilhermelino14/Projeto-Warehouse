@@ -6,3 +6,6 @@ search_methods/__pycache__/*
 experiments/__pycache__/*
 ga/__pycache__/*
 .idea/*
+experiments_statistics/__pycache__/*
+ga/genetic_operators/__pycache__/*
+ga/selection_methods/__pycache__/*
