@@ -5,3 +5,4 @@ utils/__pycache__/*
 search_methods/__pycache__/*
 experiments/__pycache__/*
 ga/__pycache__/*
+.idea/*
