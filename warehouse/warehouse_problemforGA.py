@@ -12,6 +12,8 @@ class WarehouseProblemGA(Problem):
 
     def generate_individual(self) -> "WarehouseIndividual":
         # TODO
+        new_individual = WarehouseIndividual(self.forklifts, self.products)
+        return new_individual
         pass
 
     def __str__(self):
