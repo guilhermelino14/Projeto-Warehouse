@@ -14,16 +14,16 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
         super().__init__(initial_state)
         self.actions = [ActionDown(), ActionUp(), ActionRight(), ActionLeft()]
         self.goal_position = goal_position
-        self.adjacente = None
+        self.goal_cells_adjacent = []
         if self.isProduct(self.goal_position):
             if (self.goal_position.line + 1) <= 4 and initial_state.matrix[self.goal_position.line + 1][self.goal_position.column] == constants.EMPTY:
-                self.adjacente = Cell(self.goal_position.line + 1, self.goal_position.column)
+                self.goal_cells_adjacent.append(Cell(self.goal_position.line + 1, self.goal_position.column))
             if (self.goal_position.column + 1) <= 4 and initial_state.matrix[self.goal_position.line][self.goal_position.column + 1] == constants.EMPTY:
-                self.adjacente = Cell(self.goal_position.line, self.goal_position.column  + 1)
+                self.goal_cells_adjacent.append(Cell(self.goal_position.line, self.goal_position.column  + 1))
             if (self.goal_position.line - 1) <= 4 and initial_state.matrix[self.goal_position.line - 1][self.goal_position.column] == constants.EMPTY:
-                self.adjacente = Cell(self.goal_position.line - 1, self.goal_position.column)
+                self.goal_cells_adjacent.append(Cell(self.goal_position.line - 1, self.goal_position.column))
             if (self.goal_position.column + 1) <= 4 and initial_state.matrix[self.goal_position.line][self.goal_position.column -1] == constants.EMPTY:
-                self.adjacente = Cell(self.goal_position.line, self.goal_position.column - 1)
+                self.goal_cells_adjacent.append(Cell(self.goal_position.line, self.goal_position.column - 1))
 
     def get_actions(self, state: WarehouseState) -> list:
         valid_actions = []
@@ -42,7 +42,8 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
         # ir ao warehouse state buscar posicao do forklift coinincide com a goal_position
         forkliftCell = Cell(state.line_forklift, state.column_forklift)
         if self.isProduct(self.goal_position):
-            return forkliftCell == self.adjacente
+            for cell in self.goal_cells_adjacent:
+              return forkliftCell == cell
         return forkliftCell == self.goal_position
 
     def __str__(self):
