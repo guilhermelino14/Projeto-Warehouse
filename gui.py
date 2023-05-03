@@ -629,7 +629,8 @@ class SearchSolver(threading.Thread):
             self.initial_state.column_forklift = pair.cell1.column
             problem = WarehouseProblemSearch(self.initial_state, pair.cell2)
             solution = self.agent.solve_problem(problem)
-            print(solution.__str__())
+            print(solution)
+
             # print(str(pair.cell1) + " / " + str(pair.cell2) + " : " + problem.__str__())
         self.agent.search_method.stopped=True
         self.gui.problem_ga = WarehouseProblemGA(self.agent)
