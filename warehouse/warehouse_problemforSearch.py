@@ -28,5 +28,9 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
 
     def is_goal(self, state: WarehouseState) -> bool:
         # TOD0
-        return state == self.goal_position
+        # ir ao warehouse state buscar posicao do forklift coinincide com a goal_position
+        forkliftCell = Cell(state.line_forklift, state.column_forklift)
+        return forkliftCell == self.goal_position
 
+    def __str__(self):
+        return str(self.initial_state.line_forklift) + " - " + str(self.initial_state.column_forklift) + " / " + str(self.goal_position.line) + " - " + str(self.goal_position.column)

@@ -21,6 +21,7 @@ from ga.genetic_algorithm_thread import GeneticAlgorithmThread
 from warehouse.warehouse_agent_search import WarehouseAgentSearch, read_state_from_txt_file
 from warehouse.warehouse_experiments_factory import WarehouseExperimentsFactory
 from warehouse.warehouse_problemforGA import WarehouseProblemGA
+from warehouse.warehouse_problemforSearch import WarehouseProblemSearch
 from warehouse.warehouse_state import WarehouseState
 
 matplotlib.use("TkAgg")
@@ -257,6 +258,8 @@ class Window(tk.Tk):
 
         self.experiments_factory = None
         self.experiments_runner = None
+
+        self.initial_state = None
 
         self.manage_buttons(data_set=tk.NORMAL, runSearch=tk.DISABLED, runGA=tk.DISABLED, stop=tk.DISABLED,
                             open_experiments=tk.NORMAL, run_experiments=tk.DISABLED, stop_experiments=tk.DISABLED,
@@ -613,13 +616,21 @@ class SearchSolver(threading.Thread):
         super(SearchSolver, self).__init__()
         self.gui = gui
         self.agent = agent
+        self.initial_state = gui.initial_state
 
     def stop(self):
         self.agent.stop()
 
     def run(self):
         # TODO calculate pairs distances
-
+        # correr os pair todos e executar o A*
+        for pair in self.agent.pairs:
+            self.initial_state.line_forklift = pair.cell1.line
+            self.initial_state.column_forklift = pair.cell1.column
+            problem = WarehouseProblemSearch(self.initial_state, pair.cell2)
+            solution = self.agent.solve_problem(problem)
+            print(solution.__str__())
+            # print(str(pair.cell1) + " / " + str(pair.cell2) + " : " + problem.__str__())
         self.agent.search_method.stopped=True
         self.gui.problem_ga = WarehouseProblemGA(self.agent)
         self.gui.manage_buttons(data_set=tk.NORMAL, runSearch=tk.DISABLED, runGA=tk.NORMAL, stop=tk.DISABLED,
