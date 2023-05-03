@@ -627,12 +627,14 @@ class SearchSolver(threading.Thread):
         for pair in self.agent.pairs:
             self.initial_state.line_forklift = pair.cell1.line
             self.initial_state.column_forklift = pair.cell1.column
+            print(str(pair.cell2))
             problem = WarehouseProblemSearch(self.initial_state, pair.cell2)
             solution = self.agent.solve_problem(problem)
-            print(solution)
-
-            # print(str(pair.cell1) + " / " + str(pair.cell2) + " : " + problem.__str__())
+            pair.value = solution.cost if solution is not None else 0
         self.agent.search_method.stopped=True
+        self.gui.text_problem.delete(1.0, tk.END)
+        self.gui.text_problem.insert(tk.END, str(self.agent))
+
         self.gui.problem_ga = WarehouseProblemGA(self.agent)
         self.gui.manage_buttons(data_set=tk.NORMAL, runSearch=tk.DISABLED, runGA=tk.NORMAL, stop=tk.DISABLED,
                                 open_experiments=tk.NORMAL, run_experiments=tk.DISABLED, stop_experiments=tk.DISABLED,
@@ -678,4 +680,5 @@ class SolutionRunner(threading.Thread):
                 # TODO put the catched products in black
             self.gui.queue.put((copy.deepcopy(self.state), step, False))
         self.gui.queue.put((None, steps, True))  # Done
+
 

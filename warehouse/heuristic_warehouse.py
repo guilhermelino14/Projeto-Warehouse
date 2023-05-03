@@ -20,7 +20,7 @@ class HeuristicWarehouse(Heuristic[WarehouseProblemSearch, WarehouseState]):
                     # tile_goal_line, tile_goal_column = self._goal_matrix_positions.get(tile, (0, 0))
                     # print( "line:" + str(i) + " -- " + str(tile_goal_line) + " - column:" + str(j) + " -- " + str(tile_goal_column))
                     # h += abs(i - tile_goal_line) + abs(j - tile_goal_column)
-                    h = 0
+                    h = 12
         return h
 
     def __str__(self):
