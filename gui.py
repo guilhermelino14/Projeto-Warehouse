@@ -624,6 +624,7 @@ class SearchSolver(threading.Thread):
     def run(self):
         # TODO calculate pairs distances
         # correr os pair todos e executar o A*
+
         for pair in self.agent.pairs:
             self.initial_state.line_forklift = pair.cell1.line
             self.initial_state.column_forklift = pair.cell1.column
@@ -631,7 +632,9 @@ class SearchSolver(threading.Thread):
             problem = WarehouseProblemSearch(self.initial_state, pair.cell2)
             solution = self.agent.solve_problem(problem)
             pair.value = solution.cost if solution is not None else 0
+
         self.agent.search_method.stopped=True
+
         self.gui.text_problem.delete(1.0, tk.END)
         self.gui.text_problem.insert(tk.END, str(self.agent))
 
