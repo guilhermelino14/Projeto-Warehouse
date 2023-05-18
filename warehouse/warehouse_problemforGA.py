@@ -12,9 +12,9 @@ class WarehouseProblemGA(Problem):
 
     def generate_individual(self) -> "WarehouseIndividual":
         # TODO
-        new_individual = WarehouseIndividual(self.forklifts, self.products)
+        new_individual = WarehouseIndividual(self, len(self.products))
+        new_individual.initialize()
         return new_individual
-        pass
 
     def __str__(self):
         string = "# of forklifts: "
