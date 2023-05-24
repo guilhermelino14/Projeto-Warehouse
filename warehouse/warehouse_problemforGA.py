@@ -16,7 +16,6 @@ class WarehouseProblemGA(Problem):
 
         new_individual = WarehouseIndividual(self, number_of_paths, self.products)
         return new_individual
-        pass
 
     def __str__(self):
         string = "# of forklifts: "
