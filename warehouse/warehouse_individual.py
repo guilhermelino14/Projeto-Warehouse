@@ -54,7 +54,9 @@ class WarehouseIndividual(IntVectorIndividual):
 
     def obtain_all_path(self):
         # TODO
-        self.paths = self.problem.agent_search.pairs
+        # calcular os caminhos completos percorridos pels forklifts, devolve uma lista de listas de celulas e o numero
+        # maximo de passos necessarios para percorrer todos os caminhos
+
         pass
 
     def __str__(self):
