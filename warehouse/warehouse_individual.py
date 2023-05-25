@@ -12,25 +12,36 @@ class WarehouseIndividual(IntVectorIndividual):
         self.paths = self.problem.agent_search.pairs
         self.products = self.problem.products # produtos a coletar
         self.all_path = [[] for _ in range(len(self.problem.forklifts))]
+
         # TODO
 
     def compute_fitness(self) -> float:
         # TODO
 
-        current_cell = self.problem.agent_search.forklifts[0]
-        self.all_path[0].append(current_cell)
-        last_cell = self.problem.agent_search.exit
+        current_cell = [self.problem.agent_search.forklifts[0], self.problem.agent_search.forklifts[1]]
+        # self.all_path[0].append(current_cell)
+
         self.fitness = 0
+        # ['2-2', '2-4', '1-3', '1-1']
 
         for gene in self.genome:
-            product_cell = self.products[gene-1]
-            current_cell = self.aux_fitness(current_cell, product_cell)
-            self.all_path[0].append(current_cell)
+            forklift = gene[0]
+            indice_forklift = int(forklift)-1
+            product_cell = self.products[int(gene[2]) - 1]
+            current_cell[indice_forklift] = self.aux_fitness(current_cell[indice_forklift], product_cell)
 
-        current_cell = self.aux_fitness(current_cell, last_cell)
-        self.all_path[0].append(current_cell)
+        # for gene in self.genome:
+        #     product_cell = self.products[gene-1]
+        #     current_cell = self.aux_fitness(current_cell, product_cell)
+        #     self.all_path[0].append(current_cell)
 
+        last_cell = self.problem.agent_search.exit
+        current_cell[indice_forklift] = self.aux_fitness(current_cell[0], last_cell)
+        current_cell[indice_forklift] = self.aux_fitness(current_cell[1], last_cell)
+        #current_cell = self.aux_fitness(current_cell, last_cell)
+        #self.all_path[0].append(current_cell)
 
+        print(self.fitness)
         return self.fitness
 
     def aux_fitness(self, current_cell, destination_cell) -> Cell:
@@ -49,8 +60,10 @@ class WarehouseIndividual(IntVectorIndividual):
         string = 'Fitness: ' + f'{self.fitness}' + '\n'
         string += 'Genes: ' + str(self.genome) + '\n'
         string += 'Paths: \n'
-        for cell in self.all_path[0]:
-            string += str(cell.line) + ":" + str(cell.column) + "\n"
+        for gene in self.genome:
+            for path in self.paths:
+                if path == Pair(self.problem.agent_search.forklifts[int(gene[0])-1], self.products[int(gene[2]) - 1]):
+                    string += str(path) + "\n"
         string += "\n"
         # TODO
         return string
