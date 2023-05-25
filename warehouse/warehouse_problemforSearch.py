@@ -16,9 +16,9 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
         self.goal_position = goal_position
         self.goal_cells_adjacent = []
         if self.isProduct(self.goal_position):
-            if (self.goal_position.line + 1) <= 4 and initial_state.matrix[self.goal_position.line + 1][self.goal_position.column] == constants.EMPTY:
+            if (self.goal_position.line + 1) <= self.initial_state.rows-1 and initial_state.matrix[self.goal_position.line + 1][self.goal_position.column] == constants.EMPTY:
                 self.goal_cells_adjacent.append(Cell(self.goal_position.line + 1, self.goal_position.column))
-            if (self.goal_position.column + 1) <= 4 and initial_state.matrix[self.goal_position.line][self.goal_position.column + 1] == constants.EMPTY:
+            if (self.goal_position.column + 1) <= self.initial_state.columns-1 and initial_state.matrix[self.goal_position.line][self.goal_position.column + 1] == constants.EMPTY:
                 self.goal_cells_adjacent.append(Cell(self.goal_position.line, self.goal_position.column  + 1))
             if (self.goal_position.line - 1) >= 0 and initial_state.matrix[self.goal_position.line - 1][self.goal_position.column] == constants.EMPTY:
                 self.goal_cells_adjacent.append(Cell(self.goal_position.line - 1, self.goal_position.column))
