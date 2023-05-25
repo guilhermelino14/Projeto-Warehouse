@@ -26,19 +26,12 @@ class IntVectorIndividual(Individual):
         produtos_atribuidos = 0
         prob = 0.5
         while (produtos_atribuidos != num_genes):
-
             for forklift in range(1, len(self.problem.forklifts)+1):
                 for i in range(num_genes):
-                    if GeneticAlgorithm.rand.random() > prob and len(self.genome[i]) == 1:
+                    if GeneticAlgorithm.rand.random() > prob and self.genome[i].isdigit():
                         self.genome[i] = (str(forklift) + "-" + self.genome[i])
                         produtos_atribuidos += 1
             prob -= 0.1
-        print(self.genome)
-
-
-
-        #[3,1,2]
-
         # TODO
 
     def swap_genes(self, other, index: int):

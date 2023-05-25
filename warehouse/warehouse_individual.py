@@ -27,14 +27,19 @@ class WarehouseIndividual(IntVectorIndividual):
         # ['2-2', '2-4', '1-3', '1-1']
 
         for gene in self.genome:
-            indice_forklift = int(gene[0])-1
-            product_cell = self.products[int(gene[2]) - 1]
-            current_cells[indice_forklift] = self.aux_fitness(current_cells[indice_forklift], product_cell)
+
+            p1, p2 = gene.split("-", 1)
+            indice_forklift = int(p1)
+            product_cell_indice = int(p2)
+
+            product_cell = self.products[product_cell_indice - 1]
+            current_cells[indice_forklift-1] = self.aux_fitness(current_cells[indice_forklift-1], product_cell)
 
         last_cell = self.problem.agent_search.exit
         for i in range(len(current_cells)):
             current_cells[i] = self.aux_fitness(current_cells[i], last_cell)
 
+        print(self.fitness)
         return self.fitness
 
     def aux_fitness(self, current_cell, destination_cell) -> Cell:
@@ -53,18 +58,24 @@ class WarehouseIndividual(IntVectorIndividual):
         string = 'Fitness: ' + f'{self.fitness}' + '\n'
         string += 'Genes: ' + str(self.genome) + '\n'
         string += 'Paths: \n'
-        current_cell = [self.problem.agent_search.forklifts[0], self.problem.agent_search.forklifts[1]]
+        current_cells = []
+        num_forklifts = len(self.problem.forklifts)
+        for i in range(num_forklifts):
+            current_cells.append(self.problem.forklifts[i])
         for gene in self.genome:
+            p1, p2 = gene.split("-", 1)
+            indice_forklift = int(p1)
+            product_cell_indice = int(p2)
+
             for path in self.paths:
-                if path == Pair(current_cell[int(gene[0])-1], self.products[int(gene[2]) - 1]):
-                    current_cell[int(gene[0])-1] = self.products[int(gene[2]) - 1]
+                if path == Pair(current_cells[indice_forklift-1], self.products[product_cell_indice - 1]):
+                    current_cells[indice_forklift-1] = self.products[product_cell_indice - 1]
                     string += str(path) + "\n"
         last_cell = self.problem.agent_search.exit
-        for path in self.paths:
-            if path == Pair(current_cell[0], last_cell):
-                string += str(path) + "\n"
-            if path == Pair(current_cell[1], last_cell):
-                string += str(path) + "\n"
+        for i in range(num_forklifts):
+            for path in self.paths:
+                if path == Pair(current_cells[i], last_cell):
+                    string += str(path) + "\n"
         string += "\n"
         # TODO
         return string
