@@ -12,9 +12,7 @@ class WarehouseProblemGA(Problem):
 
     def generate_individual(self) -> "WarehouseIndividual":
         # TODO
-        number_of_paths = len(self.agent_search.pairs)
-
-        new_individual = WarehouseIndividual(self, number_of_paths, self.products)
+        new_individual = WarehouseIndividual(self, len(self.products))
         return new_individual
 
     def __str__(self):
