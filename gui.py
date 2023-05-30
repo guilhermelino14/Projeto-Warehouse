@@ -632,6 +632,8 @@ class SearchSolver(threading.Thread):
             problem = WarehouseProblemSearch(self.initial_state, pair.cell2)
             solution = self.agent.solve_problem(problem)
             pair.value = solution.cost if solution is not None else 0
+            pair.cells = solution.goal_node.state.cells
+            pair.steps = solution.goal_node.state.steps
 
         self.agent.search_method.stopped=True
 

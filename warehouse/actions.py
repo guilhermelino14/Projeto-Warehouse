@@ -10,10 +10,12 @@ class ActionUp(Action[WarehouseState]):
 
     def execute(self, state: WarehouseState) -> None:
         state.move_up()
+        state.saveCell()
         state.action = self
 
     def is_valid(self, state: WarehouseState) -> bool:
         return state.can_move_up()
+
 
     def __str__(self):
         return "UP"
@@ -26,6 +28,7 @@ class ActionRight(Action[WarehouseState]):
 
     def execute(self, state: WarehouseState) -> None:
         state.move_right()
+        state.saveCell()
         state.action = self
 
     def is_valid(self, state: WarehouseState) -> bool:
@@ -42,6 +45,7 @@ class ActionDown(Action[WarehouseState]):
 
     def execute(self, state: WarehouseState) -> None:
         state.move_down()
+        state.saveCell()
         state.action = self
 
     def is_valid(self, state: WarehouseState) -> bool:
@@ -58,6 +62,7 @@ class ActionLeft(Action[WarehouseState]):
 
     def execute(self, state: WarehouseState) -> None:
         state.move_left()
+        state.saveCell()
         state.action = self
 
     def is_valid(self, state: WarehouseState) -> bool:

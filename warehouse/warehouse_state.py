@@ -5,6 +5,7 @@ from numpy import ndarray
 import constants
 from agentsearch.state import State
 from agentsearch.action import Action
+from warehouse.cell import Cell
 
 
 class WarehouseState(State[Action]):
@@ -12,7 +13,8 @@ class WarehouseState(State[Action]):
     def __init__(self, matrix: ndarray, rows, columns):
         super().__init__()
         # TODO
-
+        self.cells = []
+        self.steps = 0
         self.rows = rows
         self.columns = columns
         self.matrix = np.full([self.rows, self.columns], fill_value=0, dtype=int)
@@ -104,6 +106,10 @@ class WarehouseState(State[Action]):
             constants.EMPTY: constants.COLOREMPTY
         }
         return switcher.get(self.matrix[row][column], constants.COLOREMPTY)
+
+    def saveCell(self):
+        self.cells.append(Cell(self.line_forklift, self.column_forklift))
+        self.steps += 1
 
     def __str__(self):
         matrix_string = str(self.rows) + " " + str(self.columns) + "\n"

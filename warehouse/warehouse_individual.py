@@ -12,7 +12,12 @@ class WarehouseIndividual(IntVectorIndividual):
         self.paths = self.problem.agent_search.pairs
         self.products = self.problem.products # produtos a coletar
         self.all_path = [[] for _ in range(len(self.problem.forklifts))]
-
+        # [
+        #       []
+        #       []
+        #       []
+        # ]
+        self.steps = 0
         # TODO
 
     def compute_fitness(self) -> float:
@@ -33,26 +38,30 @@ class WarehouseIndividual(IntVectorIndividual):
             product_cell_indice = int(p2)
 
             product_cell = self.products[product_cell_indice - 1]
-            current_cells[indice_forklift-1] = self.aux_fitness(current_cells[indice_forklift-1], product_cell)
+            current_cells[indice_forklift-1] = self.aux_fitness(current_cells[indice_forklift-1], product_cell, indice_forklift-1)
 
         last_cell = self.problem.agent_search.exit
         for i in range(len(current_cells)):
-            current_cells[i] = self.aux_fitness(current_cells[i], last_cell)
+            current_cells[i] = self.aux_fitness(current_cells[i], last_cell, i)
 
         print(self.fitness)
         return self.fitness
 
-    def aux_fitness(self, current_cell, destination_cell) -> Cell:
+    def aux_fitness(self, current_cell, destination_cell, indice_forklift) -> Cell:
         for path in self.paths:
             if path == Pair(current_cell, destination_cell):
                 self.fitness += path.value
+                for i in range(1, len(path.cells)):
+                    self.all_path[indice_forklift].append(path.cells[i])
+
+                self.steps += path.steps
                 return destination_cell
 
     def obtain_all_path(self):
         # TODO
         # calcular os caminhos completos percorridos pels forklifts, devolve uma lista de listas de celulas e o numero
         # maximo de passos necessarios para percorrer todos os caminhos
-        return self.all_path, self.num_genes+2
+        return self.all_path, self.steps
 
     def __str__(self):
         string = 'Fitness: ' + f'{self.fitness}' + '\n'
