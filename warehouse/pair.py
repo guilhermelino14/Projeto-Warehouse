@@ -12,8 +12,15 @@ class Pair:
         return str(self.cell1.line) + "_" + str(self.cell1.column) + "_" + str(
             self.cell2.line) + "_" + str(self.cell2.column)
 
-    def __eq__(self, o: object) -> bool:
-        return  (self.cell1 == o.cell1 and self.cell2 == o.cell2) or (self.cell1 == o.cell2 and self.cell2 == o.cell1)
+    def __eq__(self, o) -> bool:
+        if self.cell1 == o.cell1 and self.cell2 == o.cell2:
+            return True
+
+        if self.cell1 == o.cell2 and self.cell2 == o.cell1:
+            self.cell1, self.cell2 = o.cell1, o.cell2
+            return True
+
+        return False
 
 
     def __str__(self):
