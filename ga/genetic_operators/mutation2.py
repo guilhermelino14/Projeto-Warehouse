@@ -7,12 +7,17 @@ class Mutation2(Mutation):
         super().__init__(probability)
 
     def mutate(self, ind: IntVectorIndividual) -> None:
-        # pega num gene e troca-o  para positivo se for negativo e vice versa
-        # sendo o negativo desativo e positivo ativo
-        num_genes = ind.num_genes
-        i_gen = GeneticAlgorithm.rand.randint(0, num_genes - 1)
+        # trocar o agente de um gene do gnome por outro agente
+        num_agent = ind.num_forklifts
+        num_genes = len(ind.genome)
+        i = GeneticAlgorithm.rand.randint(0, num_genes - 1)
 
-        ind.genome[i_gen] = -(ind.genome[i_gen])
+        agent = ind.genome[i].split("-")[0]
+        new_agent = GeneticAlgorithm.rand.randint(1, num_agent)
+        while agent == new_agent:
+            new_agent = GeneticAlgorithm.rand.randint(1, num_agent)
+
+        ind.genome[i] = str(new_agent) + "-" + ind.genome[i].split("-")[1]
 
     def __str__(self):
         return "Mutation 2 (" + f'{self.probability}' + ")"
