@@ -22,69 +22,90 @@ class WarehouseIndividual(IntVectorIndividual):
 
     def compute_fitness(self) -> float:
         # TODO
-        current_cells = []
+
         num_forklifts = len(self.problem.forklifts)
-        for i in range(num_forklifts):
-            current_cells.append(self.problem.forklifts[i])
-        # self.all_path[0].append(current_cell)
-
+        forklift = 0
+        current_cell = self.problem.forklifts[forklift] # 1º celula
+        last_cell = self.problem.agent_search.exit # celula de saida
         self.fitness = 0
-        # ['2-2', '2-4', '1-3', '1-1']
-
+        # [1,3,-1,2]
         for gene in self.genome:
-
-            p1, p2 = gene.split("-", 1)
-            indice_forklift = int(p1)
-            product_cell_indice = int(p2)
-
-            product_cell = self.products[product_cell_indice - 1]
-            current_cells[indice_forklift-1] = self.aux_fitness(current_cells[indice_forklift-1], product_cell, indice_forklift-1)
-
-        last_cell = self.problem.agent_search.exit
-        for i in range(len(current_cells)):
-            current_cells[i] = self.aux_fitness(current_cells[i], last_cell, i)
-
-        print(self.fitness)
+            if gene == 0:
+                self.aux_fitness(current_cell, last_cell)
+                forklift +=1
+                current_cell = self.problem.forklifts[forklift]
+                self.all_path[forklift].append(current_cell)
+                continue
+            product_cell = self.products[gene-1]
+            current_cell = self.aux_fitness(current_cell, product_cell,)
+        self.aux_fitness(current_cell, last_cell)
+        print()
         return self.fitness
 
-    def aux_fitness(self, current_cell, destination_cell, indice_forklift) -> Cell:
+    def aux_fitness(self, current_cell, destination_cell) -> Cell:
         for path in self.paths:
             if path == Pair(current_cell, destination_cell):
                 self.fitness += path.value
-                for i in range(1, len(path.cells)):
-                    self.all_path[indice_forklift].append(path.cells[i])
-
-                self.steps += path.steps
                 return destination_cell
 
     def obtain_all_path(self):
         # TODO
         # calcular os caminhos completos percorridos pels forklifts, devolve uma lista de listas de celulas e o numero
         # maximo de passos necessarios para percorrer todos os caminhos
+        self.all_path = [[] for _ in range(len(self.problem.forklifts))]
+        self.steps = 0
+        forklift = 0
+        current_cell = self.problem.forklifts[forklift]  # 1º celula
+        last_cell = self.problem.agent_search.exit  # celula de saida
+        self.all_path[forklift].append(current_cell)
+        for gene in self.genome:
+            if gene == 0:
+                for path in self.paths:
+                    if path == Pair(current_cell, last_cell):
+                        for i in range(len(path.cells)):
+                            self.all_path[forklift].append(path.cells[i])
+                        self.steps += path.steps
+                forklift += 1
+                current_cell = self.problem.forklifts[forklift]
+                self.all_path[forklift].append(current_cell)
+                continue
+            product_cell = self.products[gene - 1]
+            for path in self.paths:
+                if path == Pair(current_cell, product_cell):
+                    for i in range(len(path.cells)):
+                        self.all_path[forklift].append(path.cells[i])
+                    self.steps += path.steps
+                    current_cell = product_cell
+                    break
+        for path in self.paths:
+            if path == Pair(current_cell, last_cell):
+                for i in range(len(path.cells)):
+                    self.all_path[forklift].append(path.cells[i])
+                self.steps += path.steps
+
         return self.all_path, self.steps
 
     def __str__(self):
         string = 'Fitness: ' + f'{self.fitness}' + '\n'
         string += 'Genes: ' + str(self.genome) + '\n'
         string += 'Paths: \n'
-        current_cells = []
-        num_forklifts = len(self.problem.forklifts)
-        for i in range(num_forklifts):
-            current_cells.append(self.problem.forklifts[i])
-        for gene in self.genome:
-            p1, p2 = gene.split("-", 1)
-            indice_forklift = int(p1)
-            product_cell_indice = int(p2)
+        forklift = 0
+        current_cell = self.problem.forklifts[forklift]  # 1º celula
+        last_cell = self.problem.agent_search.exit  # celula de saida
 
+        for gene in self.genome:
+            if gene == 0:
+                forklift += 1
+                current_cell = self.problem.forklifts[forklift]
+                continue
             for path in self.paths:
-                if path == Pair(current_cells[indice_forklift-1], self.products[product_cell_indice - 1]):
-                    current_cells[indice_forklift-1] = self.products[product_cell_indice - 1]
+                if path == Pair(current_cell, self.products[gene - 1]):
+                    current_cell = self.products[gene - 1]
                     string += str(path) + "\n"
-        last_cell = self.problem.agent_search.exit
-        for i in range(num_forklifts):
-            for path in self.paths:
-                if path == Pair(current_cells[i], last_cell):
-                    string += str(path) + "\n"
+                    break
+        for path in self.paths:
+            if path == Pair(current_cell, last_cell):
+                string += str(path) + "\n"
         string += "\n"
         # TODO
         return string

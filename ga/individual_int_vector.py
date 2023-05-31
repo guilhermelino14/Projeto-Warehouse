@@ -12,26 +12,12 @@ class IntVectorIndividual(Individual):
 
     def __init__(self, problem: Problem, num_genes: int):
         super().__init__(problem, num_genes)
-        # [3,1,2]
-        # [1-3, A1, B2, B4]
-        # [A1, B3, B4, B2]
-        # [0, A1, B2, 0] [B3, A1, B2, A1]
-        # [0, B3, B4, 0] [A1, B3, B4, A3]
+        # [1, 3, -1, 2]
         self.num_forklifts = len(self.problem.forklifts)
 
-        lista = np.arange(1, num_genes+1)
-        lista = np.random.permutation(lista)
+        lista = np.append(np.arange(1, num_genes+1), np.full(self.num_forklifts-1, 0, dtype=int))
 
-        self.genome = [str(valor) for valor in lista]
-        produtos_atribuidos = 0
-        prob = 0.5
-        while (produtos_atribuidos != num_genes):
-            for forklift in range(1, len(self.problem.forklifts)+1):
-                for i in range(num_genes):
-                    if GeneticAlgorithm.rand.random() > prob and self.genome[i].isdigit():
-                        self.genome[i] = (str(forklift) + "-" + self.genome[i])
-                        produtos_atribuidos += 1
-            prob -= 0.1
+        self.genome = np.random.permutation(lista)
         # TODO
 
     def swap_genes(self, other, index: int):

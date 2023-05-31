@@ -9,8 +9,9 @@ class Recombination2(Recombination):
 
     def recombine(self, ind1: Individual, ind2: Individual) -> None:
         num_genes = ind1.num_genes
-        cut1 = GeneticAlgorithm.rand.randint(0, num_genes - 1)
-        cut2 = GeneticAlgorithm.rand.randint(0, num_genes - 1)
+        num_forklifts = len(ind1.problem.forklifts)
+        cut1 = GeneticAlgorithm.rand.randint(0, num_forklifts)
+        cut2 = GeneticAlgorithm.rand.randint(0, num_forklifts)
         if cut2 < cut1:
             cut1, cut2 = cut2, cut1
 

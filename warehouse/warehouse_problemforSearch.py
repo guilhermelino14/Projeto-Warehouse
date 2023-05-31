@@ -24,7 +24,6 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
                 self.goal_cells_adjacent.append(Cell(self.goal_position.line - 1, self.goal_position.column))
             if (self.goal_position.column - 1) >= 0 and initial_state.matrix[self.goal_position.line][self.goal_position.column -1] == constants.EMPTY:
                 self.goal_cells_adjacent.append(Cell(self.goal_position.line, self.goal_position.column - 1))
-
     def get_actions(self, state: WarehouseState) -> list:
         valid_actions = []
         for action in self.actions:
@@ -35,11 +34,13 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
     def get_successor(self, state: WarehouseState, action: Action) -> WarehouseState:
         successor = copy.deepcopy(state)
         action.execute(successor)
+        successor.saveCell()
         return successor
 
     def is_goal(self, state: WarehouseState) -> bool:
         # TOD0
         # ir ao warehouse state buscar posicao do forklift coinincide com a goal_position
+
         forkliftCell = Cell(state.line_forklift, state.column_forklift)
         if self.isProduct(self.goal_position):
             for cell in self.goal_cells_adjacent:

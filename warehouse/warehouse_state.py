@@ -29,6 +29,7 @@ class WarehouseState(State[Action]):
                     self.line_exit = i
                     self.column_exit = j
 
+
     def can_move_up(self) -> bool:
         # TOD0
         if self.line_forklift != 0 and (self.matrix[self.line_forklift - 1][self.column_forklift] == constants.EMPTY \

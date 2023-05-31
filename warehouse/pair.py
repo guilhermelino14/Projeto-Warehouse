@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Pair:
     def __init__(self, cell1, cell2):
         self.cell1 = cell1
@@ -18,6 +21,7 @@ class Pair:
 
         if self.cell1 == o.cell2 and self.cell2 == o.cell1:
             self.cell1, self.cell2 = o.cell1, o.cell2
+            self.cells = np.flip(self.cells)
             return True
 
         return False
