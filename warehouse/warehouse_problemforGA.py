@@ -12,7 +12,7 @@ class WarehouseProblemGA(Problem):
 
     def generate_individual(self) -> "WarehouseIndividual":
         # TODO
-        new_individual = WarehouseIndividual(self, len(self.products))
+        new_individual = WarehouseIndividual(self, len(self.products)+ len(self.forklifts)-1)
         return new_individual
 
     def __str__(self):

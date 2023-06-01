@@ -15,8 +15,8 @@ class Recombination2(Recombination):
         if cut2 < cut1:
             cut1, cut2 = cut2, cut1
 
-        child1 = [0] * len(ind1.genome)
-        child2 = [0] * len(ind1.genome)
+        child1 = [-1] * len(ind1.genome)
+        child2 = [-1] * len(ind1.genome)
 
         contains_child1 = []
         contains_child2 = []
@@ -40,7 +40,7 @@ class Recombination2(Recombination):
         if j == num_genes:
             j=0
         for i in range(cut2 + 1):
-            if child1[j] != 0:
+            if child1[j] != -1:
                 break
             if not contains_child1.__contains__(ind2.genome[i][2]):
                 child1[j] = ind2.genome[i]
@@ -59,7 +59,7 @@ class Recombination2(Recombination):
         if j == num_genes:
             j=0
         for i in range(cut2 + 1):
-            if child2[j] != 0:
+            if child2[j] != -1:
                 break
             if not contains_child2.__contains__(ind1.genome[i][2]):
                 child2[j] = ind1.genome[i]
