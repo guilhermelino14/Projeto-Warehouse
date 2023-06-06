@@ -10,3 +10,11 @@ class Cell:
 
     def __str__(self) -> str:
         return f"{self.line}-{self.column}"
+
+
+class Adjancente(Cell):
+    def __init__(self, cell, cellProduct) -> None:
+        super().__init__(cell.line, cell.column)
+        self.productLine = cellProduct.line
+        self.productColumn = cellProduct.column
+

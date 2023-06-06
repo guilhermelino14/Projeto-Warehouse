@@ -3,6 +3,7 @@ import numpy as np
 from ga.individual_int_vector import IntVectorIndividual
 from warehouse.pair import Pair
 from warehouse.cell import Cell
+from warehouse.cell import Adjancente
 
 
 class WarehouseIndividual(IntVectorIndividual):
@@ -78,8 +79,9 @@ class WarehouseIndividual(IntVectorIndividual):
             product_cell = self.products[gene - 1]
             for path in self.paths:
                 if path == Pair(current_cell, product_cell):
-                    for i in range(len(path.cells)):
+                    for i in range(len(path.cells)-1):
                         self.all_path[forklift].append(path.cells[i])
+                    self.all_path[forklift].append(Adjancente(path.cells[len(path.cells)-1], path.cell2))
                     steps_aux += path.steps
                     current_cell = product_cell
                     break

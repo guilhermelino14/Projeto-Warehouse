@@ -23,6 +23,7 @@ from warehouse.warehouse_experiments_factory import WarehouseExperimentsFactory
 from warehouse.warehouse_problemforGA import WarehouseProblemGA
 from warehouse.warehouse_problemforSearch import WarehouseProblemSearch
 from warehouse.warehouse_state import WarehouseState
+from warehouse.cell import Adjancente
 
 matplotlib.use("TkAgg")
 
@@ -669,6 +670,8 @@ class SolutionRunner(threading.Thread):
             if not self.thread_running:
                 return
             for j in range(len(forklift_path)):
+                if isinstance(old_cell[j], Adjancente):
+                    self.state.matrix[old_cell[j].productLine][old_cell[j].productColumn] = constants.PRODUCT_CATCH
                 if old_cell[j] is None:
                     firs_cell = forklift_path[j][0]
                     old_cell[j] = firs_cell
