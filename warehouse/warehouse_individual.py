@@ -28,18 +28,19 @@ class WarehouseIndividual(IntVectorIndividual):
         current_cell = self.problem.forklifts[forklift] # 1º celula
         last_cell = self.problem.agent_search.exit # celula de saida
         self.fitness = 0
-        # [1,3,-1,2]
+
+        last_product = len(self.products)
+
+        # [1,3,4,2] o 4 é separador
         for gene in self.genome:
-            if gene == 0:
+            if gene > last_product:
                 self.aux_fitness(current_cell, last_cell)
                 forklift +=1
                 current_cell = self.problem.forklifts[forklift]
-                self.all_path[forklift].append(current_cell)
                 continue
             product_cell = self.products[gene-1]
             current_cell = self.aux_fitness(current_cell, product_cell,)
         self.aux_fitness(current_cell, last_cell)
-        print()
         return self.fitness
 
     def aux_fitness(self, current_cell, destination_cell) -> Cell:
@@ -54,35 +55,41 @@ class WarehouseIndividual(IntVectorIndividual):
         # maximo de passos necessarios para percorrer todos os caminhos
         self.all_path = [[] for _ in range(len(self.problem.forklifts))]
         self.steps = 0
+        steps_aux = 0
         forklift = 0
         current_cell = self.problem.forklifts[forklift]  # 1º celula
         last_cell = self.problem.agent_search.exit  # celula de saida
         self.all_path[forklift].append(current_cell)
+        last_product = len(self.products)
         for gene in self.genome:
-            if gene == 0:
+            if gene > last_product:
                 for path in self.paths:
                     if path == Pair(current_cell, last_cell):
                         for i in range(len(path.cells)):
                             self.all_path[forklift].append(path.cells[i])
-                        self.steps += path.steps
+                        steps_aux += path.steps
                 forklift += 1
                 current_cell = self.problem.forklifts[forklift]
                 self.all_path[forklift].append(current_cell)
+                if self.steps < steps_aux:
+                    self.steps = steps_aux
+                steps_aux = 0
                 continue
             product_cell = self.products[gene - 1]
             for path in self.paths:
                 if path == Pair(current_cell, product_cell):
                     for i in range(len(path.cells)):
                         self.all_path[forklift].append(path.cells[i])
-                    self.steps += path.steps
+                    steps_aux += path.steps
                     current_cell = product_cell
                     break
         for path in self.paths:
             if path == Pair(current_cell, last_cell):
                 for i in range(len(path.cells)):
                     self.all_path[forklift].append(path.cells[i])
-                self.steps += path.steps
-
+                steps_aux += path.steps
+        if self.steps < steps_aux:
+            self.steps = steps_aux
         return self.all_path, self.steps
 
     def __str__(self):
@@ -92,9 +99,9 @@ class WarehouseIndividual(IntVectorIndividual):
         forklift = 0
         current_cell = self.problem.forklifts[forklift]  # 1º celula
         last_cell = self.problem.agent_search.exit  # celula de saida
-
+        last_product = len(self.products)
         for gene in self.genome:
-            if gene == 0:
+            if gene > last_product:
                 forklift += 1
                 current_cell = self.problem.forklifts[forklift]
                 continue
