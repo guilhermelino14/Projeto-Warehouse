@@ -54,46 +54,84 @@ class WarehouseIndividual(IntVectorIndividual):
         # TODO
         # calcular os caminhos completos percorridos pels forklifts, devolve uma lista de listas de celulas e o numero
         # maximo de passos necessarios para percorrer todos os caminhos
+
+        # self.all_path -> array bidimensional com as celulas que corresponde ao caminho de cada forklift
+        # self.steps -> passos executados no final
+        # steps_forklift -> passos que o forklift currente tem
+        # forklift -> indice do forklift currente
+        # last_product -> corresponde ao nº do ultimo produto (nota nao é o indice)
+        # current_cell -> celula onde "se encontra" o forklift supostamente ao percorrer os genes
+        # product_cell -> celula correspondente ao nº do produto representado no gene
         self.all_path = [[] for _ in range(len(self.problem.forklifts))]
-        self.steps = 0
-        steps_aux = 0
-        forklift = 0
-        current_cell = self.problem.forklifts[forklift]  # 1º celula
-        last_cell = self.problem.agent_search.exit  # celula de saida
-        self.all_path[forklift].append(current_cell)
+        self.steps = steps_forklift = forklift = 0
         last_product = len(self.products)
+        current_cell = self.problem.forklifts[forklift]
+        # adiciona já a primeira celula ao self_path
+        # pq os Pairs.cells nao tem a celula inicial do caminho
+        # só é adicionado apos a execucao da açao
+        current_cell = self.problem.forklifts[forklift]  # 1º celula
+        self.all_path[forklift].append(current_cell)
+
         for gene in self.genome:
             if gene > last_product:
-                for path in self.paths:
-                    if path == Pair(current_cell, last_cell):
-                        for i in range(len(path.cells)):
-                            self.all_path[forklift].append(path.cells[i])
-                        steps_aux += path.steps
+                #Se é um gene de separacao
+                #   vai adicionar o caminho do fork lift ate a saida e aumentar os steps desse forklift
+                #   e vai passar para o forklift seguinte e assim preencher o proximo array de celulas
+                #   mete logo a celula respondente ao forklift
+                #   e verifica se o steps do forklift anterior é superior aos steps
+                #       se for maior substitui e reseta os steps_forklift
+                steps_forklift += self.addCellsToPath_exit(current_cell, forklift)
                 forklift += 1
                 current_cell = self.problem.forklifts[forklift]
+
                 self.all_path[forklift].append(current_cell)
-                if self.steps < steps_aux:
-                    self.steps = steps_aux
-                steps_aux = 0
+                self.checkSteps(steps_forklift)
+                steps_forklift = 0
                 continue
+            #Se nao é uma celula de separacaco chega aki
+            #vai buscar product_cell que corresponde ao gene do produto
+            #vai adicionar o caminho do fork lift ate a saida e aumentar os steps desse forklift
+            #e vai passar a current_cell a ser igual ao  product_cell
             product_cell = self.products[gene - 1]
-            for path in self.paths:
-                if path == Pair(current_cell, product_cell):
-                    for i in range(len(path.cells)-1):
-                        self.all_path[forklift].append(path.cells[i])
-                    self.all_path[forklift].append(Adjancente(path.cells[len(path.cells)-1], path.cell2))
-                    steps_aux += path.steps
-                    current_cell = product_cell
-                    break
+            steps_forklift += self.addCellsToPath_product(current_cell, product_cell, forklift)
+            current_cell = product_cell
+        steps_forklift += self.addCellsToPath_exit(current_cell, forklift)
+        #   e verifica se o steps do forklift anterior é superior aos steps
+        #       se for maior substitui e reseta os steps_forklift
+        self.checkSteps(steps_forklift)
+        self.steps += 1 #existe um bug qualquer que falta um step para o ultimo forklift a sair
+        return self.all_path, self.steps
+
+
+    def addCellsToPath_exit(self, current_cell, forklift):
+        #vai encontrar o Pair igual ao current_cell to last_cell
+        #e vai adicionar o array de cells ao self.all_path
+        #e retorna os steps correspondentes
+        last_cell = self.problem.agent_search.exit  # celula de saida
         for path in self.paths:
             if path == Pair(current_cell, last_cell):
                 for i in range(len(path.cells)):
                     self.all_path[forklift].append(path.cells[i])
-                steps_aux += path.steps
-        if self.steps < steps_aux:
-            self.steps = steps_aux
-        return self.all_path, self.steps
+                return path.steps
 
+    def addCellsToPath_product(self, current_cell, product_cell, forklift):
+        #vai encontrar o Pair igual ao current_cell to product_cell
+        #e vai adicionar o array de cells ao self.all_path
+        #a ultima celula desse array nao vai adicionar,
+        #mas vai adicionar uma nova celula Adjacente com os campos iguais a ultima celula do array e com a celula correpondente ao produto
+        #e retorna os steps correspondentes
+        for path in self.paths:
+            if path == Pair(current_cell, product_cell):
+                for i in range(len(path.cells) - 1):
+                    self.all_path[forklift].append(path.cells[i])
+                self.all_path[forklift].append(Adjancente(path.cells[len(path.cells) - 1], path.cell2))
+                return path.steps
+
+    def checkSteps(self, steps):
+        #vai ver se o nº de steps é maior que o self.steps
+        #   se for vai substituir
+        if self.steps < steps:
+            self.steps = steps
     def __str__(self):
         string = 'Fitness: ' + f'{self.fitness}' + '\n'
         string += 'Genes: ' + str(self.genome) + '\n'
