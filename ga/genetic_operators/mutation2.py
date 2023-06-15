@@ -11,7 +11,7 @@ class Mutation2(Mutation):
         num_genes = len(ind.genome)
         num_forklifts = len(ind.problem.forklifts)
 
-        print("BEFORE" + str(ind.genome))
+        #print("BEFORE" + str(ind.genome))
         # Encontra o indice do forklift com menos produtos
         if num_forklifts > 1:
             count_products = 0
@@ -39,7 +39,7 @@ class Mutation2(Mutation):
                 ind.genome[separator_small_forklift] = ind.genome[separator_small_forklift + 1]
                 ind.genome[separator_small_forklift + 1] = aux
 
-            print("AFTER " + str(ind.genome))
+            #print("AFTER " + str(ind.genome))
 
 
 

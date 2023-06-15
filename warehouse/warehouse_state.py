@@ -32,29 +32,26 @@ class WarehouseState(State[Action]):
 
     def can_move_up(self) -> bool:
         # TOD0
-        if self.line_forklift != 0 and (self.matrix[self.line_forklift - 1][self.column_forklift] == constants.EMPTY \
-                                    or self.matrix[self.line_forklift - 1][self.column_forklift] == constants.EXIT):
+        # Nota: as colisoes sao tratadas no fitness
+        if self.line_forklift != 0 and (self.matrix[self.line_forklift - 1][self.column_forklift] in {constants.EMPTY, constants.EXIT, constants.FORKLIFT}):
             return True
         return False
 
     def can_move_right(self) -> bool:
         # TOD0
-        if self.column_forklift != self.columns-1 and (self.matrix[self.line_forklift][self.column_forklift + 1] == constants.EMPTY \
-                                    or self.matrix[self.line_forklift][self.column_forklift + 1] == constants.EXIT):
+        if self.column_forklift != self.columns-1 and (self.matrix[self.line_forklift][self.column_forklift + 1] in {constants.EMPTY, constants.EXIT, constants.FORKLIFT}):
             return True
         return False
 
     def can_move_down(self) -> bool:
         # TOD0
-        if self.line_forklift != self.rows-1 and (self.matrix[self.line_forklift + 1][self.column_forklift] == constants.EMPTY \
-                                    or self.matrix[self.line_forklift + 1][self.column_forklift] == constants.EXIT):
+        if self.line_forklift != self.rows-1 and (self.matrix[self.line_forklift + 1][self.column_forklift] in {constants.EMPTY, constants.EXIT, constants.FORKLIFT}):
             return True
         return False
 
     def can_move_left(self) -> bool:
         # TOD0
-        if self.column_forklift != 0 and (self.matrix[self.line_forklift][self.column_forklift - 1] == constants.EMPTY \
-                                    or self.matrix[self.line_forklift][self.column_forklift - 1] == constants.EXIT):
+        if self.column_forklift != 0 and (self.matrix[self.line_forklift][self.column_forklift - 1] in {constants.EMPTY, constants.EXIT, constants.FORKLIFT}):
             return True
         return False
 

@@ -14,9 +14,9 @@ class WarehouseIndividual(IntVectorIndividual):
         self.products = self.problem.products # produtos a coletar
         self.all_path = [[] for _ in range(len(self.problem.forklifts))]
         # [
-        #       []
-        #       []
-        #       []
+        #       [cell1]
+        #       [cell2, cell3, cell4]
+        #       [cell5, cell1, cell4]
         # ]
         self.steps = 0
         # TODO
@@ -71,15 +71,18 @@ class WarehouseIndividual(IntVectorIndividual):
         #   e verifica se o steps do forklift anterior é superior aos steps
         #       se for maior substitui e reseta os steps_forklift
         self.checkSteps(steps_forklift)
-        self.steps += 1  # existe um bug qualquer que falta um step para o ultimo forklift a sair
-
+        self.fitness = self.steps
         # VER COLISOES
         for i in range(self.steps):
             if self.colisao(self.all_path, i):
-                self.fitness += 500
-        self.fitness = self.steps
+                self.fitness += 50
         return self.fitness
 
+    # [
+    #       [cell1]
+    #       [cell2, cell3, cell4]
+    #       [cell5, cell1, cell4]
+    # ]
     def colisao(self, all_path, indice):
         cells_num_determinado_indice = []
         for forklift_path in all_path:
@@ -88,8 +91,7 @@ class WarehouseIndividual(IntVectorIndividual):
             cell = forklift_path[indice]
             if cell in cells_num_determinado_indice:
                 return True
-            else:
-                cells_num_determinado_indice.append(cell)
+            cells_num_determinado_indice.append(cell)
         return False
 
     def aux_fitness(self, current_cell, destination_cell) -> Cell:
@@ -148,7 +150,6 @@ class WarehouseIndividual(IntVectorIndividual):
         #       se for maior substitui e reseta os steps_forklift
         self.checkSteps(steps_forklift)
         self.steps += 1 #existe um bug qualquer que falta um step para o ultimo forklift a sair
-
         return self.all_path, self.steps
 
 
