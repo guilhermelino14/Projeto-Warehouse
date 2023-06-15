@@ -23,26 +23,74 @@ class WarehouseIndividual(IntVectorIndividual):
 
     def compute_fitness(self) -> float:
         # TODO
+        # calcular os caminhos completos percorridos pels forklifts, devolve uma lista de listas de celulas e o numero
+        # maximo de passos necessarios para percorrer todos os caminhos
 
-        num_forklifts = len(self.problem.forklifts)
-        forklift = 0
-        current_cell = self.problem.forklifts[forklift] # 1º celula
-        last_cell = self.problem.agent_search.exit # celula de saida
-        self.fitness = 0
+        # self.all_path -> array bidimensional com as celulas que corresponde ao caminho de cada forklift
+        # self.steps -> passos executados no final
+        # steps_forklift -> passos que o forklift currente tem
+        # forklift -> indice do forklift currente
+        # last_product -> corresponde ao nº do ultimo produto (nota nao é o indice)
+        # current_cell -> celula onde "se encontra" o forklift supostamente ao percorrer os genes
+        # product_cell -> celula correspondente ao nº do produto representado no gene
 
+        self.all_path = [[] for _ in range(len(self.problem.forklifts))]
+        self.fitness = self.steps = steps_forklift = forklift = 0
         last_product = len(self.products)
+        current_cell = self.problem.forklifts[forklift]
+        # adiciona já a primeira celula ao self_path
+        # pq os Pairs.cells nao tem a celula inicial do caminho
+        # só é adicionado apos a execucao da açao
+        current_cell = self.problem.forklifts[forklift]  # 1º celula
+        self.all_path[forklift].append(current_cell)
 
-        # [1,3,4,2] o 4 é separador
         for gene in self.genome:
             if gene > last_product:
-                self.aux_fitness(current_cell, last_cell)
-                forklift +=1
+                # Se é um gene de separacao
+                #   vai adicionar o caminho do fork lift ate a saida e aumentar os steps desse forklift
+                #   e vai passar para o forklift seguinte e assim preencher o proximo array de celulas
+                #   mete logo a celula respondente ao forklift
+                #   e verifica se o steps do forklift anterior é superior aos steps
+                #       se for maior substitui e reseta os steps_forklift
+                steps_forklift += self.addCellsToPath_exit(current_cell, forklift)
+                forklift += 1
                 current_cell = self.problem.forklifts[forklift]
+                self.all_path[forklift].append(current_cell)
+
+                self.checkSteps(steps_forklift)
+                steps_forklift = 0
                 continue
-            product_cell = self.products[gene-1]
-            current_cell = self.aux_fitness(current_cell, product_cell,)
-        self.aux_fitness(current_cell, last_cell)
+            # Se nao é uma celula de separacaco chega aki
+            # vai buscar product_cell que corresponde ao gene do produto
+            # vai adicionar o caminho do fork lift ate a saida e aumentar os steps desse forklift
+            # e vai passar a current_cell a ser igual ao  product_cell
+            product_cell = self.products[gene - 1]
+            steps_forklift += self.addCellsToPath_product(current_cell, product_cell, forklift)
+            current_cell = product_cell
+        steps_forklift += self.addCellsToPath_exit(current_cell, forklift)
+        #   e verifica se o steps do forklift anterior é superior aos steps
+        #       se for maior substitui e reseta os steps_forklift
+        self.checkSteps(steps_forklift)
+        self.steps += 1  # existe um bug qualquer que falta um step para o ultimo forklift a sair
+
+        # VER COLISOES
+        for i in range(self.steps):
+            if self.colisao(self.all_path, i):
+                self.fitness += 500
+        self.fitness = self.steps
         return self.fitness
+
+    def colisao(self, all_path, indice):
+        cells_num_determinado_indice = []
+        for forklift_path in all_path:
+            if indice > len(forklift_path)-1:
+                continue
+            cell = forklift_path[indice]
+            if cell in cells_num_determinado_indice:
+                return True
+            else:
+                cells_num_determinado_indice.append(cell)
+        return False
 
     def aux_fitness(self, current_cell, destination_cell) -> Cell:
         for path in self.paths:
@@ -83,8 +131,8 @@ class WarehouseIndividual(IntVectorIndividual):
                 steps_forklift += self.addCellsToPath_exit(current_cell, forklift)
                 forklift += 1
                 current_cell = self.problem.forklifts[forklift]
-
                 self.all_path[forklift].append(current_cell)
+
                 self.checkSteps(steps_forklift)
                 steps_forklift = 0
                 continue
@@ -100,6 +148,7 @@ class WarehouseIndividual(IntVectorIndividual):
         #       se for maior substitui e reseta os steps_forklift
         self.checkSteps(steps_forklift)
         self.steps += 1 #existe um bug qualquer que falta um step para o ultimo forklift a sair
+
         return self.all_path, self.steps
 
 
@@ -125,6 +174,11 @@ class WarehouseIndividual(IntVectorIndividual):
                 for i in range(len(path.cells) - 1):
                     self.all_path[forklift].append(path.cells[i])
                 self.all_path[forklift].append(Adjancente(path.cells[len(path.cells) - 1], path.cell2))
+                return path.steps
+
+    def addSteps(self, current_cell, destination_cell, forklift):
+        for path in self.paths:
+            if path == Pair(current_cell, destination_cell):
                 return path.steps
 
     def checkSteps(self, steps):

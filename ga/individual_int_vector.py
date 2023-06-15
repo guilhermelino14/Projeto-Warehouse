@@ -13,9 +13,9 @@ class IntVectorIndividual(Individual):
     def __init__(self, problem: Problem, num_genes: int):
         super().__init__(problem, num_genes)
 
-        lista = np.arange(1, len(self.problem.products)+1 + len(self.problem.forklifts)-1, dtype=int)
+        self.genome = np.arange(1, len(self.problem.products)+1 + len(self.problem.forklifts)-1, dtype=int)
 
-        self.genome = np.random.permutation(lista)
+        GeneticAlgorithm.rand.shuffle(self.genome)
         # TODO
 
     def swap_genes(self, other, index: int):
