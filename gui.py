@@ -12,6 +12,7 @@ import threading
 import constants
 from ga.genetic_operators.mutation2 import Mutation2
 from ga.genetic_operators.mutation3 import Mutation3
+from ga.genetic_operators.mutation4 import Mutation4
 from ga.genetic_operators.recombination3 import Recombination3
 from ga.selection_methods.tournament import Tournament
 from ga.genetic_operators.recombination2 import Recombination2
@@ -136,7 +137,7 @@ class Window(tk.Tk):
                                                anchor="e", width=25)
         self.label_mutation_methods.grid(row=7, column=0)
 
-        mutation_methods = ['Insert', 'Mutation2', 'Mutation3']
+        mutation_methods = ['Insert', 'Mutation2', 'Mutation3', 'Mutation4']
 
         self.combo_mutation_methods = ttk.Combobox(master=self.panel_parameters, state="readonly",
                                                    values=mutation_methods, width=14)
@@ -325,7 +326,8 @@ class Window(tk.Tk):
         mutation_method = MutationInsert(
             float(self.entry_mutation_prob.get())) if mutation_methods_index == 0 else \
             Mutation2(float(self.entry_mutation_prob.get())) if mutation_methods_index == 1 else \
-                Mutation3(float(self.entry_mutation_prob.get()))
+                Mutation3(float(self.entry_mutation_prob.get())) if mutation_methods_index == 2 else \
+                    Mutation4(float(self.entry_mutation_prob.get()))
 
         self.genetic_algorithm = GeneticAlgorithmThread(
             int(self.entry_seed.get()),

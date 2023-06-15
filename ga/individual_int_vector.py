@@ -13,7 +13,7 @@ class IntVectorIndividual(Individual):
     def __init__(self, problem: Problem, num_genes: int):
         super().__init__(problem, num_genes)
 
-        lista = np.arange(1, len(self.problem.products)+1 + len(self.problem.forklifts)-1)
+        lista = np.arange(1, len(self.problem.products)+1 + len(self.problem.forklifts)-1, dtype=int)
 
         self.genome = np.random.permutation(lista)
         # TODO
