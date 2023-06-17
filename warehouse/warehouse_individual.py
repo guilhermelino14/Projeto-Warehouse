@@ -43,7 +43,6 @@ class WarehouseIndividual(IntVectorIndividual):
         # só é adicionado apos a execucao da açao
         current_cell = self.problem.forklifts[forklift]  # 1º celula
         self.all_path[forklift].append(current_cell)
-
         for gene in self.genome:
             if gene > last_product:
                 # Se é um gene de separacao

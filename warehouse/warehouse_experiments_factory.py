@@ -3,6 +3,7 @@ from experiments.experiment import Experiment
 from experiments.experiment_listener import ExperimentListener
 from ga.genetic_operators.mutation3 import Mutation3
 from ga.genetic_operators.mutation2 import Mutation2
+from ga.genetic_operators.mutation4 import Mutation4
 from ga.selection_methods.tournament import Tournament
 from ga.genetic_operators.recombination2 import Recombination2
 from ga.genetic_operators.recombination_pmx import RecombinationPMX
@@ -13,6 +14,7 @@ from experiments_statistics.statistic_best_in_run import StatisticBestInRun
 from experiments_statistics.statistic_best_average import StatisticBestAverage
 from warehouse.warehouse_agent_search import read_state_from_txt_file, WarehouseAgentSearch
 from warehouse.warehouse_problemforGA import WarehouseProblemGA
+from warehouse.warehouse_problemforSearch import WarehouseProblemSearch
 from warehouse.warehouse_state import WarehouseState
 
 
@@ -58,12 +60,28 @@ class WarehouseExperimentsFactory(ExperimentsFactory):
                 self.mutation_method = Mutation2(mutation_probability)
             case 'mutation3':
                 self.mutation_method = Mutation3(mutation_probability)
+            case 'mutation4':
+                self.mutation_method = Mutation4(mutation_probability)
 
         # PROBLEM
         matrix, num_rows, num_columns = read_state_from_txt_file(self.get_parameter_value("Problem_file"))
 
         agent_search = WarehouseAgentSearch(WarehouseState(matrix, num_rows, num_columns))
         # TODO calculate pair distances
+
+        for pair in agent_search.pairs:
+            agent_search.initial_environment.line_forklift = pair.cell1.line
+            agent_search.initial_environment.column_forklift = pair.cell1.column
+            print(str(pair.cell2))
+            problem = WarehouseProblemSearch(agent_search.initial_environment, pair.cell2)
+            solution = agent_search.solve_problem(problem)
+            pair.value = solution.cost if solution is not None else 0
+            pair.cells = solution.goal_node.state.cells
+            pair.steps = solution.goal_node.state.steps
+
+        agent_search.search_method.stopped=True
+
+
         self.problem = WarehouseProblemGA(agent_search)
 
         experiment_textual_representation = self.build_experiment_textual_representation()
