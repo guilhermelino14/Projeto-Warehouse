@@ -13,6 +13,7 @@ import constants
 from ga.genetic_operators.mutation2 import Mutation2
 from ga.genetic_operators.mutation3 import Mutation3
 from ga.genetic_operators.mutation4 import Mutation4
+from ga.genetic_operators.mutation5 import Mutation5
 from ga.genetic_operators.recombination3 import Recombination3
 from ga.selection_methods.tournament import Tournament
 from ga.genetic_operators.recombination2 import Recombination2
@@ -137,12 +138,19 @@ class Window(tk.Tk):
                                                anchor="e", width=25)
         self.label_mutation_methods.grid(row=7, column=0)
 
-        mutation_methods = ['Insert', 'Mutation2', 'Mutation3', 'Mutation4']
+        mutation_methods = ['Insert', 'Mutation2', 'Mutation3', 'Mutation4', 'Mutation5']
 
-        self.combo_mutation_methods = ttk.Combobox(master=self.panel_parameters, state="readonly",
-                                                   values=mutation_methods, width=14)
-        self.combo_mutation_methods.set(mutation_methods[0])
-        self.combo_mutation_methods.grid(row=7, column=1)
+        #self.combo_mutation_methods = ttk.Combobox(master=self.panel_parameters, state="readonly",
+        #                                                       values=mutation_methods, width=14)
+        #self.combo_mutation_methods.set(mutation_methods[0])
+        #self.combo_mutation_methods.grid(row=7, column=1)
+
+        self.selection_box_mutation_methods = tk.Listbox(master=self.panel_parameters, selectmode=tk.MULTIPLE,
+                                                         height=min(len(mutation_methods), len(mutation_methods)))
+        self.selection_box_mutation_methods.grid(row=7, column=1)
+
+        for mutacao in mutation_methods:
+            self.selection_box_mutation_methods.insert(tk.END, mutacao)
 
         self.label_mutation_prob = tk.Label(master=self.panel_parameters, text="Mutation prob.: ", anchor="e", width=25)
         self.label_mutation_prob.grid(row=8, column=0)
@@ -317,17 +325,28 @@ class Window(tk.Tk):
 
         selection_method = Tournament(int(self.entry_tournament_size.get()))
         recombination_methods_index = self.combo_recombination_methods.current()
-        recombination_method = RecombinationPMX(
-            float(self.entry_recombination_prob.get())) if recombination_methods_index == 0 else \
+        recombination_method = RecombinationPMX(float(self.entry_recombination_prob.get())) if recombination_methods_index == 0 else \
             Recombination2(float(self.entry_recombination_prob.get())) if recombination_methods_index == 1 else \
                 Recombination3(float(self.entry_recombination_prob.get()))
 
-        mutation_methods_index = self.combo_mutation_methods.current()
-        mutation_method = MutationInsert(
-            float(self.entry_mutation_prob.get())) if mutation_methods_index == 0 else \
-            Mutation2(float(self.entry_mutation_prob.get())) if mutation_methods_index == 1 else \
-                Mutation3(float(self.entry_mutation_prob.get())) if mutation_methods_index == 2 else \
-                    Mutation4(float(self.entry_mutation_prob.get()))
+        # mutation_methods_index = self.combo_mutation_methods.current()
+        # mutation_method = MutationInsert(float(self.entry_mutation_prob.get())) if mutation_methods_index == 0 else \
+        #     Mutation2(float(self.entry_mutation_prob.get())) if mutation_methods_index == 1 else \
+        #         Mutation3(float(self.entry_mutation_prob.get())) if mutation_methods_index == 2 else \
+        #             Mutation4(float(self.entry_mutation_prob.get()))
+        mutation_method = []
+        mutation_methods_index = self.selection_box_mutation_methods.curselection()
+        if 0 in mutation_methods_index:
+            mutation_method.append(MutationInsert(float(self.entry_mutation_prob.get())))
+        if 1 in mutation_methods_index:
+            mutation_method.append(Mutation2(float(self.entry_mutation_prob.get())))
+        if 2 in mutation_methods_index:
+            mutation_method.append(Mutation3(float(self.entry_mutation_prob.get())))
+        if 3 in mutation_methods_index:
+            mutation_method.append(Mutation4(float(self.entry_mutation_prob.get())))
+        if 4 in mutation_methods_index:
+            mutation_method.append(Mutation5(float(self.entry_mutation_prob.get())))
+
 
         self.genetic_algorithm = GeneticAlgorithmThread(
             int(self.entry_seed.get()),

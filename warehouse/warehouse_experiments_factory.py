@@ -4,6 +4,7 @@ from experiments.experiment_listener import ExperimentListener
 from ga.genetic_operators.mutation3 import Mutation3
 from ga.genetic_operators.mutation2 import Mutation2
 from ga.genetic_operators.mutation4 import Mutation4
+from ga.genetic_operators.mutation5 import Mutation5
 from ga.selection_methods.tournament import Tournament
 from ga.genetic_operators.recombination2 import Recombination2
 from ga.genetic_operators.recombination_pmx import RecombinationPMX
@@ -26,7 +27,7 @@ class WarehouseExperimentsFactory(ExperimentsFactory):
         self.max_generations = None
         self.selection_method = None
         self.recombination_method = None
-        self.mutation_method = None
+        self.mutation_methods = None
         self.problem = None
         self.experiment = None
 
@@ -52,16 +53,19 @@ class WarehouseExperimentsFactory(ExperimentsFactory):
                 self.recombination_method = Recombination3(recombination_probability)
 
         # MUTATION
+        self.mutation_methods = []
         mutation_probability = float(self.get_parameter_value('Mutation_probability'))
-        match self.get_parameter_value('Mutation'):
-            case 'insert':
-                self.mutation_method = MutationInsert(mutation_probability)
-            case 'mutation2':
-                self.mutation_method = Mutation2(mutation_probability)
-            case 'mutation3':
-                self.mutation_method = Mutation3(mutation_probability)
-            case 'mutation4':
-                self.mutation_method = Mutation4(mutation_probability)
+        mutations = self.get_parameter_value('Mutation').split()
+        if 'insert' in mutations:
+            self.mutation_methods.append(MutationInsert(mutation_probability))
+        if 'mutation2' in mutations:
+            self.mutation_methods.append(Mutation2(mutation_probability))
+        if 'mutation3' in mutations:
+            self.mutation_methods.append(Mutation3(mutation_probability))
+        if 'mutation4' in mutations:
+            self.mutation_methods.append(Mutation4(mutation_probability))
+        if 'mutation5' in mutations:
+            self.mutation_methods.append(Mutation5(mutation_probability))
 
         # PROBLEM
         matrix, num_rows, num_columns = read_state_from_txt_file(self.get_parameter_value("Problem_file"))
@@ -111,7 +115,7 @@ class WarehouseExperimentsFactory(ExperimentsFactory):
                 self.max_generations,
                 self.selection_method,
                 self.recombination_method,
-                self.mutation_method
+                self.mutation_methods
         )
 
         for statistic in self.statistics:
@@ -130,7 +134,10 @@ class WarehouseExperimentsFactory(ExperimentsFactory):
         string += 'Max generations: ' + str(self.max_generations) + '\r\n'
         string += 'Selection: ' + str(self.selection_method) + '\r\n'
         string += 'Recombination: ' + str(self.recombination_method) + '\r\n'
-        string += 'Mutation:' + str(self.mutation_method) + '\r\n'
+        string += 'Mutation:' + str(self.recombination_method) + '\r\n'
+        for mutation in self.mutation_methods:
+            string += str(mutation) + ' '
+        string += '\r\n'
         return string
 
     def build_experiment_header(self) -> str:
@@ -146,5 +153,7 @@ class WarehouseExperimentsFactory(ExperimentsFactory):
         string += str(self.max_generations) + '\t'
         string += str(self.selection_method) + '\t'
         string += str(self.recombination_method) + '\t'
-        string += str(self.mutation_method) + '\t'
+        for mutation in self.mutation_methods:
+            string += str(mutation) + ' '
+        string += '\t'
         return string

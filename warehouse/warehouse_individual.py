@@ -23,8 +23,6 @@ class WarehouseIndividual(IntVectorIndividual):
 
     def compute_fitness(self) -> float:
         # TODO
-        # calcular os caminhos completos percorridos pels forklifts, devolve uma lista de listas de celulas e o numero
-        # maximo de passos necessarios para percorrer todos os caminhos
 
         # self.all_path -> array bidimensional com as celulas que corresponde ao caminho de cada forklift
         # self.steps -> passos executados no final
@@ -43,6 +41,7 @@ class WarehouseIndividual(IntVectorIndividual):
         # só é adicionado apos a execucao da açao
         current_cell = self.problem.forklifts[forklift]  # 1º celula
         self.all_path[forklift].append(current_cell)
+        # [11, 6, 21, 5, 17, 8, 12, 15, 7, 1, 3, 10, 4, 16, 14, 22, 9, 13, 19, 2, 18, 20]
         for gene in self.genome:
             if gene > last_product:
                 # Se é um gene de separacao

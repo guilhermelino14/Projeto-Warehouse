@@ -16,13 +16,13 @@ class GeneticAlgorithm:
                  max_generations: int,
                  selection_method: SelectionMethod,
                  recombination: "Recombination",
-                 mutation: "Mutation"):
+                 mutation: ["Mutation"]):
         GeneticAlgorithm.rand = Random(seed)
         self.population_size = population_size
         self.max_generations = max_generations
         self.selection_method = selection_method
         self.recombination_method = recombination
-        self.mutation_method = mutation
+        self.mutation_methods = mutation
         self.population = None
         self.generation = 0
         self.stopped = False
@@ -45,7 +45,10 @@ class GeneticAlgorithm:
         while self.generation < self.max_generations and not self.stopped:
             self.population = self.selection_method.run(self.population)
             self.recombination_method.run(self.population)
-            self.mutation_method.run(self.population)
+            for i in range(self.population_size):
+                rand = GeneticAlgorithm.rand.random()
+                for mutation in self.mutation_methods:
+                    mutation.run(self.population.individuals[i], rand)
             self.population.evaluate()
             if self.population.best_individual.better_than(self.best_in_run):
                 self.best_in_run = copy.deepcopy(self.population.best_individual)

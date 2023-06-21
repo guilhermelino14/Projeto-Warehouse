@@ -11,12 +11,15 @@ class Mutation(GeneticOperator):
     def __init__(self, probability: float):
         super().__init__(probability)
 
-    def run(self, population: Population) -> None:
-        population_size = len(population.individuals)
-        for i in range(population_size):
-            if GeneticAlgorithm.rand.random() < self.probability:
-                self.mutate(population.individuals[i])
+    # def run(self, population: Population) -> None:
+    #     population_size = len(population.individuals)
+    #     for i in range(population_size):
+    #         if GeneticAlgorithm.rand.random() < self.probability:
+    #             self.mutate(population.individuals[i])
 
+    def run(self, individuo: Individual, rand) -> None:
+        if rand < self.probability:
+            self.mutate(individuo)
     @abstractmethod
     def mutate(self, individual: Individual) -> None:
         pass
