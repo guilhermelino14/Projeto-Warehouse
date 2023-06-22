@@ -29,7 +29,7 @@ class Recombination3(Recombination):
         child1 = [-1] * num_genes
         for i in range(cut1_ind1, cut2_ind1+1):
             child1[i] = ind1.genome[i]
-
+        #print("MIDDLE 1" + str(child1))
         #i é o indice do child
         #j é o indice do ind
         j = cut2_ind2
@@ -37,7 +37,7 @@ class Recombination3(Recombination):
         for i in range(cut2_ind1+1, num_genes):
             if child1[i] == -1:
                 while child1.__contains__(ind2.genome[j]) or ind2.genome[j] > last_product:
-                    if count_seperator_child1 < num_forklifts - 1:
+                    if ind2.genome[j] > last_product and count_seperator_child1 < num_forklifts - 1:
                         separador_child1 += 1
                         if separador_child1 > num_genes:
                             separador_child1 = last_product + 1
@@ -52,7 +52,7 @@ class Recombination3(Recombination):
         for i in range(cut1_ind1):
             if child1[i] == -1:
                 while child1.__contains__(ind2.genome[j]) or ind2.genome[j] > last_product:
-                    if count_seperator_child1 < num_forklifts - 1:
+                    if ind2.genome[j] > last_product and count_seperator_child1 < num_forklifts - 1:
                         # se for um separador #e se ainda preencheu todos os separadores
                         # vai prencher com um separador
                         separador_child1 += 1
@@ -60,6 +60,7 @@ class Recombination3(Recombination):
                             separador_child1 = last_product + 1
                         child1[i] = separador_child1
                         count_seperator_child1 += 1
+                        j = self.avancarIndiceNumChromossomo(j, num_genes)
                         break
                     j = self.avancarIndiceNumChromossomo(j, num_genes)
                 if child1[i] != -1:
@@ -69,12 +70,13 @@ class Recombination3(Recombination):
         child2 = [-1] * num_genes
         for i in range(cut1_ind2, cut2_ind2+1):
             child2[i] = ind2.genome[i]
-
+        #print("MIDDLE 2" + str(child2))
+        j = cut2_ind1
         j = self.avancarIndiceNumChromossomo(j, num_genes)
         for i in range(cut2_ind2+1, num_genes):
             if child2[i] == -1:
                 while child2.__contains__(ind1.genome[j]) or ind1.genome[j] > last_product:
-                    if count_seperator_child2 < num_forklifts - 1:
+                    if ind1.genome[j] > last_product and count_seperator_child2 < num_forklifts - 1:
                         separador_child2 += 1
                         if separador_child2 > num_genes:
                             separador_child2 = last_product + 1
@@ -88,7 +90,7 @@ class Recombination3(Recombination):
         for i in range(cut1_ind2):
             if child2[i] == -1:
                 while child2.__contains__(ind1.genome[j]) or ind1.genome[j] > last_product:
-                    if count_seperator_child2 < num_forklifts - 1:
+                    if ind1.genome[j] > last_product and count_seperator_child2 < num_forklifts - 1:
                         separador_child2 += 1
                         if separador_child2 > num_genes:
                             separador_child2 = last_product + 1
@@ -100,7 +102,7 @@ class Recombination3(Recombination):
                     continue
                 child2[i] = ind1.genome[j]
 
-        #print("AFTER " + str(ind1.genome) + " - " + str(ind2.genome))
+        #print("AFTER " + str(child1) + " - " + str(child2))
 
 
         ind1.genome = child2
