@@ -12,6 +12,8 @@ class Recombination2(Recombination):
         num_genes = ind1.num_genes
         cut1 = GeneticAlgorithm.rand.randint(0, num_genes - 1)
         cut2 = GeneticAlgorithm.rand.randint(0, num_genes - 1)
+        if cut2 < cut1:
+            cut1, cut2 = cut2, cut1
 
         #print("BEFORE " + str(ind1.genome) + " - " + str(ind2.genome))
 
@@ -38,8 +40,8 @@ class Recombination2(Recombination):
 
         #print("AFTER " + str(child1) + " - " + str(child2))
 
-        ind1.genome = child1
-        ind2.genome = child2
+        ind1.genome = child2
+        ind2.genome = child1
 
     def __str__(self):
         return "Recombination 2 (" + f'{self.probability}' + ")"
