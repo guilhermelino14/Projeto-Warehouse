@@ -19,8 +19,9 @@ class Recombination3(Recombination):
             count_seperator_child1 = count_seperator_child2 = 0
         else:
             forkliftToRecombine = GeneticAlgorithm.rand.randint(1, num_forklifts)
-            cut1_ind1, cut2_ind1, count_seperator_child1, separador_child1 = self.computeCuts(ind1, forkliftToRecombine)
-            cut1_ind2, cut2_ind2, count_seperator_child2, separador_child2 = self.computeCuts(ind2, forkliftToRecombine)
+            cut1_ind1, cut2_ind1, count_seperator_child1, separadores_child1 = self.computeCuts(ind1, forkliftToRecombine)
+            cut1_ind2, cut2_ind2, count_seperator_child2, separadores_child2 = self.computeCuts(ind2, forkliftToRecombine)
+
 
 
         #print("BEFORE " + str(ind1.genome) + " - " + str(ind2.genome))
@@ -38,10 +39,7 @@ class Recombination3(Recombination):
             if child1[i] == -1:
                 while child1.__contains__(ind2.genome[j]) or ind2.genome[j] > last_product:
                     if ind2.genome[j] > last_product and count_seperator_child1 < num_forklifts - 1:
-                        separador_child1 += 1
-                        if separador_child1 > num_genes:
-                            separador_child1 = last_product + 1
-                        child1[i] = separador_child1
+                        child1[i] = self.getSeparator(ind1, separadores_child1)
                         count_seperator_child1 += 1
                         break
                     j = self.avancarIndiceNumChromossomo(j, num_genes)
@@ -55,10 +53,7 @@ class Recombination3(Recombination):
                     if ind2.genome[j] > last_product and count_seperator_child1 < num_forklifts - 1:
                         # se for um separador #e se ainda preencheu todos os separadores
                         # vai prencher com um separador
-                        separador_child1 += 1
-                        if separador_child1 > num_genes:
-                            separador_child1 = last_product + 1
-                        child1[i] = separador_child1
+                        child1[i] = self.getSeparator(ind1, separadores_child1)
                         count_seperator_child1 += 1
                         j = self.avancarIndiceNumChromossomo(j, num_genes)
                         break
@@ -77,10 +72,7 @@ class Recombination3(Recombination):
             if child2[i] == -1:
                 while child2.__contains__(ind1.genome[j]) or ind1.genome[j] > last_product:
                     if ind1.genome[j] > last_product and count_seperator_child2 < num_forklifts - 1:
-                        separador_child2 += 1
-                        if separador_child2 > num_genes:
-                            separador_child2 = last_product + 1
-                        child2[i] = separador_child2
+                        child2[i] = self.getSeparator(ind1, separadores_child2)
                         count_seperator_child2 += 1
                         break
                     j = self.avancarIndiceNumChromossomo(j, num_genes)
@@ -91,10 +83,7 @@ class Recombination3(Recombination):
             if child2[i] == -1:
                 while child2.__contains__(ind1.genome[j]) or ind1.genome[j] > last_product:
                     if ind1.genome[j] > last_product and count_seperator_child2 < num_forklifts - 1:
-                        separador_child2 += 1
-                        if separador_child2 > num_genes:
-                            separador_child2 = last_product + 1
-                        child2[i] = separador_child2
+                        child2[i] = self.getSeparator(ind1, separadores_child2)
                         count_seperator_child2 += 1
                         break
                     j = self.avancarIndiceNumChromossomo(j, num_genes)
@@ -111,13 +100,19 @@ class Recombination3(Recombination):
     def __str__(self):
         return "Recombination 3 (" + f'{self.probability}' + ")"
 
+
+    def getSeparator(self, ind: Individual, separadores):
+        for separador in range(len(ind.problem.products)+1, len(ind.genome)+1):
+            if not separador in separadores:
+                separadores.append(separador)
+                return separador
     def computeCuts(self, ind : Individual, forkliftToRecombine):
         last_product = len(ind.problem.products) # os last_productes sao depois do ultimo produto
         if forkliftToRecombine == 1:
             for i in range(len(ind.genome)):
                 if ind.genome[i] > last_product:
-                    return 0, i, 1, ind.genome[i]
-            return 0, ind.num_genes - 1, 1, ind.genome[ind.num_genes - 1]
+                    return 0, i, 1, [ind.genome[i]]
+            return 0, ind.num_genes - 1, 1, [ind.genome[ind.num_genes - 1]]
 
         count = 1 #forklift count
         for i in range(len(ind.genome)):
@@ -128,8 +123,8 @@ class Recombination3(Recombination):
 
         for i in range(cut1+1, len(ind.genome)):
             if ind.genome[i] > last_product:
-                return cut1, i, 2, ind.genome[i]
-        return cut1, ind.num_genes - 1, 1, ind.genome[cut1]
+                return cut1, i, 2, [ind.genome[cut1], ind.genome[i]]
+        return cut1, ind.num_genes - 1, 1, [ind.genome[cut1]]
 
 
     def avancarIndiceNumChromossomo(self, i, num_genes):

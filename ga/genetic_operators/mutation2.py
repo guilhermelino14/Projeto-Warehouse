@@ -13,31 +13,32 @@ class Mutation2(Mutation):
 
         #print("BEFORE" + str(ind.genome))
         # Encontra o indice do forklift com menos produtos
-        if num_forklifts > 1:
-            count_products = 0
-            less_products = num_genes
-            last_product = len(ind.problem.products)  # os separadores sao depois do ultimo produto
-            separator_small_forklift = last_separator_i = 0
-            for i in range(num_genes):
-                if ind.genome[i] > last_product:
-                    if count_products < less_products:
-                        less_products = count_products
-                        separator_small_forklift = i
-                    count_products = 0
-                    last_separator_i = i
-                    continue
-                count_products += 1
-            # ao terminar o for faz a verificacao pq o ultimo forklift acaba sem separador
-            # mas ao inves de defenir o separador usa o anterior para aumentar os seus produtos
-            if count_products <= less_products:
-                aux = ind.genome[last_separator_i]
-                ind.genome[last_separator_i] = ind.genome[last_separator_i-1]
-                ind.genome[last_separator_i-1] = aux
-            #se nao vai aumentar sempre para a frente
-            else:
-                aux = ind.genome[separator_small_forklift]
-                ind.genome[separator_small_forklift] = ind.genome[separator_small_forklift + 1]
-                ind.genome[separator_small_forklift + 1] = aux
+        if num_forklifts <= 1:
+            return
+        count_products = 0
+        less_products = num_genes
+        last_product = len(ind.problem.products)  # os separadores sao depois do ultimo produto
+        separator_small_forklift = last_separator_i = 0
+        for i in range(num_genes):
+            if ind.genome[i] > last_product:
+                if count_products < less_products:
+                    less_products = count_products
+                    separator_small_forklift = i
+                count_products = 0
+                last_separator_i = i
+                continue
+            count_products += 1
+        # ao terminar o for faz a verificacao pq o ultimo forklift acaba sem separador
+        # mas ao inves de defenir o separador usa o anterior para aumentar os seus produtos
+        if count_products <= less_products:
+            aux = ind.genome[last_separator_i]
+            ind.genome[last_separator_i] = ind.genome[last_separator_i-1]
+            ind.genome[last_separator_i-1] = aux
+        #se nao vai aumentar sempre para a frente
+        else:
+            aux = ind.genome[separator_small_forklift]
+            ind.genome[separator_small_forklift] = ind.genome[separator_small_forklift + 1]
+            ind.genome[separator_small_forklift + 1] = aux
 
             #print("AFTER " + str(ind.genome))
 

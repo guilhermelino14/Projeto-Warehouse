@@ -18,20 +18,23 @@ class WarehouseIndividual(IntVectorIndividual):
         #       [cell2, cell3, cell4]
         #       [cell5, cell1, cell4]
         # ]
+        self.all_steps = 0
         self.steps = 0
         # TODO
 
     def compute_fitness(self) -> float:
         # TODO
         self.computePathAndSteps()
-        self.fitness = self.steps
+        self.fitness = self.steps + self.all_steps
         # VER COLISOES
         for i in range(self.steps):
-            if self.colisao(self.all_path, i):
+            if self.colisaoTipo1(self.all_path, i):
                 self.fitness += 50
+        self.fitness += self.colisaoTipo2(self.all_path) * 50
         return self.fitness
 
-    def colisao(self, all_path, indice):
+    def colisaoTipo1(self, all_path, indice):
+        #Colisao quando 2 forklifts tentam ir para a mesma celula
         cells_num_determinado_indice = []
         for forklift_path in all_path:
             if indice > len(forklift_path)-1:
@@ -41,6 +44,15 @@ class WarehouseIndividual(IntVectorIndividual):
                 return True
             cells_num_determinado_indice.append(cell)
         return False
+
+    def colisaoTipo2(self, all_path):
+        # Colisao quando forklift1 vai pa celula do forklift2 e o foklift2 para o celula do forklift1
+        colisoes = 0
+        for forklift_indice in range(len(all_path) - 2):
+            for forklift_seguinte_indice in range(1, len(all_path)):
+                if all_path[forklift_indice] == all_path[forklift_seguinte_indice] and all_path[forklift_indice + 1] == all_path[forklift_seguinte_indice - 1]:
+                    colisoes += 1
+        return colisoes
 
     # def aux_fitness(self, current_cell, destination_cell) -> Cell:
     #     for path in self.paths:
@@ -90,6 +102,7 @@ class WarehouseIndividual(IntVectorIndividual):
                 self.all_path[forklift].append(current_cell)
 
                 self.checkSteps(steps_forklift)
+                self.all_steps += steps_forklift
                 steps_forklift = 0
                 continue
             # Se nao é uma celula de separacaco chega aki
@@ -104,6 +117,7 @@ class WarehouseIndividual(IntVectorIndividual):
         #   e verifica se o steps do forklift anterior é superior aos steps
         #       se for maior substitui e reseta os steps_forklift
         self.checkSteps(steps_forklift)
+        self.all_steps += steps_forklift
 
 
     def addCellsToPath_exit(self, current_cell, forklift):
