@@ -76,7 +76,6 @@ class WarehouseExperimentsFactory(ExperimentsFactory):
         for pair in agent_search.pairs:
             agent_search.initial_environment.line_forklift = pair.cell1.line
             agent_search.initial_environment.column_forklift = pair.cell1.column
-            print(str(pair.cell2))
             problem = WarehouseProblemSearch(agent_search.initial_environment, pair.cell2)
             solution = agent_search.solve_problem(problem)
             pair.value = solution.cost if solution is not None else 0

@@ -650,7 +650,6 @@ class SearchSolver(threading.Thread):
         for pair in self.agent.pairs:
             self.initial_state.line_forklift = pair.cell1.line
             self.initial_state.column_forklift = pair.cell1.column
-            print(str(pair.cell2))
             problem = WarehouseProblemSearch(self.initial_state, pair.cell2)
             solution = self.agent.solve_problem(problem)
             pair.value = solution.cost if solution is not None else 0 #quando nao encontra solucao
