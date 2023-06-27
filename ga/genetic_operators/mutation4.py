@@ -20,7 +20,7 @@ class Mutation4(Mutation):
 
     def mutate(self, ind: IntVectorIndividual) -> None:
 
-        print("BEFORE " + str(ind.genome))
+        #print("BEFORE " + str(ind.genome))
         num_forklifts = len(ind.problem.forklifts)
         
         forkliftToRecombine = GeneticAlgorithm.rand.randint(1, num_forklifts)
@@ -47,7 +47,7 @@ class Mutation4(Mutation):
 
         ind.genome = array_permutado
 
-        print("AFTER " + str(ind.genome))
+        #print("AFTER " + str(ind.genome))
 
 
 
